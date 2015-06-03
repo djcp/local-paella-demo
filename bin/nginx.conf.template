@@ -1,0 +1,40 @@
+#user USER;
+worker_processes 4;
+pid /tmp/mock_matterhorn_nginx.pid;
+
+events {
+  worker_connections 768;
+}
+
+http {
+  sendfile on;
+  tcp_nopush on;
+  tcp_nodelay on;
+  keepalive_timeout 65;
+  types_hash_max_size 2048;
+  # include /private/etc/apache2/mime.types;
+  default_type application/octet-stream;
+  access_log PWD/logs/access.log;
+  error_log PWD/logs/error.log;
+  gzip on;
+  gzip_disable "msie6";
+  gzip_vary on;
+  gzip_proxied any;
+  gzip_comp_level 6;
+  gzip_buffers 16 8k;
+  gzip_http_version 1.1;
+  gzip_types text/plain text/css application/json application/javascript text/xml application/xml application/xml+rss text/javascript;
+
+ server {
+  listen *:8001 default_server;
+  root PWD/;
+  index index.html index.htm index.nginx-debian.html;
+  server_name _;
+  location / {
+    limit_rate_after 50m;
+    limit_rate 450k;
+  }
+ }
+}
+
+
